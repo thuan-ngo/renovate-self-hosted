@@ -1,0 +1,56 @@
+name: Renovate
+
+on:
+  workflow_dispatch:
+    inputs:
+      log-level:
+        description: renovate log
+        type: choice
+        options:
+          - debug
+          - info
+        default: info
+  push:
+    branches:
+      - 'dev'  # Auto-run on test branches
+    paths:
+      - '.github/workflows/renovate.yaml'
+      - 'renovate.json5'
+  schedule:
+    - cron: '*/30 * * * *'
+
+concurrency: renovate
+
+permissions:
+  contents: read
+
+jobs:
+  renovate:
+    runs-on: [ self-hosted, internal-network ]
+    steps:
+      - name: Generate GitHub Apps token
+        id: generate-github-app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run self-hosted Renovate
+        uses: renovatebot/github-action@e2421a9a80287bba9997b41a15ea1e5585d96925 # v43.0.16
+        with:
+          configurationFile: renovate.json5
+          token: ${{ steps.generate-github-app-token.outputs.token }}
+          # renovate: datasource=docker depName=renovate/renovate versioning=docker
+          renovate-version: 41.116.7
+        env:
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
+          RENOVATE_PLATFORM: github
+          RENOVATE_ENDPOINT: https://api.github.com/
+          RENOVATE_LOG_LEVEL: ${{ github.event.inputs.log-level || 'debug' }}
+          LOG_LEVEL: ${{ github.event.inputs.log-level || 'debug' }}
+          RENOVATE_PRINT_CONFIG: 'true'
+
+#     Config notify if needed
