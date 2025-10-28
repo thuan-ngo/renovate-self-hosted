@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   renovate:
-    runs-on: [ self-hosted, internal-network ]
+    runs-on: [ self-hosted ]
     steps:
       - name: Generate GitHub Apps token
         id: generate-github-app-token
