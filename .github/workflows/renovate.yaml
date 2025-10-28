@@ -10,12 +10,6 @@ on:
           - debug
           - info
         default: info
-  push:
-    branches:
-      - 'dev'  # Auto-run on test branches
-    paths:
-      - '.github/workflows/renovate.yaml'
-      - 'renovate.json5'
   schedule:
     - cron: '*/30 * * * *'
 
@@ -43,14 +37,11 @@ jobs:
         with:
           configurationFile: renovate.json5
           token: ${{ steps.generate-github-app-token.outputs.token }}
-          # renovate: datasource=docker depName=renovate/renovate versioning=docker
           renovate-version: 41.116.7
         env:
           RENOVATE_REPOSITORIES: ${{ github.repository }}
-          RENOVATE_PLATFORM: github
-          RENOVATE_ENDPOINT: https://api.github.com/
-          RENOVATE_LOG_LEVEL: ${{ github.event.inputs.log-level || 'debug' }}
-          LOG_LEVEL: ${{ github.event.inputs.log-level || 'debug' }}
-          RENOVATE_PRINT_CONFIG: 'true'
+          RENOVATE_GIT_AUTHOR: 'garoon-renovate-bot <garoon-renovate-bot[bot]@users.noreply.github.com>'
+          RENOVATE_LOG_LEVEL: ${{ github.event.inputs.log-level || 'info' }}
+          LOG_LEVEL: ${{ github.event.inputs.log-level || 'info' }}
 
 #     Config notify if needed
