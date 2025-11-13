@@ -1,11 +1,30 @@
 {
-  extends: ["github>cybozu/renovate-config", ":prConcurrentLimitNone"],
-  enabledManagers: ["github-actions"],
-  packageRules: [
-    {
-      description: "Disable automerge for all GitHub Actions updates (require manual review)",
-      matchManagers: ["github-actions"],
-      automerge: false,
-    },
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended"],
+  baseBranchPatterns: ["main"],
+  enabledManagers: [],
+  branchPrefix: "Garoon-renovate/",
+  labels: ["renovate"],
+  timezone: "Asia/Tokyo",
+  minimumReleaseAge: "14 days",
+  dependencyDashboard: true,
+  automergeSchedule: false,
+  prConcurrentLimit: 0,
+  prHourlyLimit: 4,
+  semanticCommits: "disabled",
+  automergeStrategy: "merge-commit",
+  platformAutomerge: false,
+  schedule: ["after 7pm on Tuesday", "before 7am on Wednesday"],
+  automergeSchedule: [
+    "after 7pm every weekday",
+    "before 9am every weekday",
+    "every weekend",
   ],
+  lockFileMaintenance: {
+    enabled: true,
+    automerge: false,
+    schedule: ["every 3 months on the first day of the month"],
+  },
+  packageRules: [],
+  customManagers: [],
 }
