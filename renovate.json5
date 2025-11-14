@@ -2,7 +2,7 @@
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
   baseBranchPatterns: ["main"],
-  enabledManagers: [],
+  enabledManagers: ["github-actions"],
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
@@ -13,18 +13,38 @@
   prHourlyLimit: 4,
   semanticCommits: "disabled",
   automergeStrategy: "merge-commit",
-  platformAutomerge: false,
-  schedule: ["after 7pm on Tuesday", "before 7am on Wednesday"],
-  automergeSchedule: [
-    "after 7pm every weekday",
-    "before 9am every weekday",
-    "every weekend",
-  ],
+  platformAutomerge: true,
   lockFileMaintenance: {
     enabled: true,
     automerge: false,
     schedule: ["every 3 months on the first day of the month"],
   },
-  packageRules: [],
+  "packageRules": [
+    {
+      "description": "Official GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "matchPackagePatterns": ["^actions/"],
+      "matchUpdateTypes": ["major"],
+      "branchPrefix": "Garoon-renovate/official-actions/",
+      "automerge": true
+    },
+    {
+      "description": "Internal Organization Actions",
+      "matchManagers": ["github-actions"],
+      "matchPackagePatterns": ["^cybozu"],
+      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
+      "branchPrefix": "Garoon-renovate/internal-actions/",
+      "automerge": true
+    },
+    {
+      "description": "Third-party Actions - manual review required",
+      "matchManagers": ["github-actions"],
+      "matchPackagePatterns": ["^(?!actions/|cybozu).*"],
+      "branchPrefix": "Garoon-renovate/third-party-actions/",
+      "automerge": false,
+      "pinDigests": true,
+      "minimumReleaseAge": "30 days"
+    }
+  ],
   customManagers: [],
 }
