@@ -39,7 +39,7 @@
     {
       "description": "Third-party Actions - manual review required",
       "matchManagers": ["github-actions"],
-      "matchPackagePatterns": ["^(?!actions/|cybozu).*"],
+      "excludePackagePatterns": ["^actions/", "^cybozu"],
       "branchPrefix": "Garoon-renovate/third-party-actions/",
       "automerge": false,
       "pinDigests": true,

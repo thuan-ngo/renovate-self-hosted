@@ -216,7 +216,7 @@ packageRules: [
   {
     description: "Third-party Actions - manual review required",
     matchManagers: ["github-actions"],
-    matchPackagePatterns: ["^(?!actions/|cybozu).*"],
+    excludePackagePatterns: ["^actions/", "^cybozu"],
     branchPrefix: "Garoon-renovate/third-party-actions/",
     automerge: false,
     pinDigests: true,
@@ -240,7 +240,8 @@ packageRules: [
 - **Lý do:** Actions nội bộ, tin cậy, kiểm soát được
 
 #### 3️⃣ Third-party Actions (Tất cả còn lại)
-- **Pattern:** `^(?!actions/|cybozu).*`
+- **Pattern:** `excludePackagePatterns: ["^actions/", "^cybozu"]`
+- **Logic:** Match tất cả GitHub Actions, EXCLUDE official và internal
 - **Ví dụ:** `aws-actions/*`, `docker/*`, `ruby/setup-ruby`
 - **Auto-merge:** ❌ Yêu cầu review thủ công
 - **Pin to digest:** ✅ Immutable, chống tag hijacking
