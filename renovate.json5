@@ -14,12 +14,6 @@
   semanticCommits: "disabled",
   automergeStrategy: "merge-commit",
   platformAutomerge: false,
-  schedule: ["after 7pm on Tuesday", "before 7am on Wednesday"], // Update later
-  automergeSchedule: [
-    "after 7pm every weekday",
-    "before 9am every weekday",
-    "every weekend",
-  ], // Update later
   lockFileMaintenance: {
     enabled: true,
     automerge: false,
@@ -36,9 +30,8 @@
     {
       matchManagers: ["github-actions"],
       matchDepTypes: ["action"],
-      matchUpdateTypes: ["minor", "patch", "digest"],
+      matchUpdateTypes: ["minor", "patch"],
       branchPrefix: "Garoon-renovate-automerge/",
-      schedule: ["after 8pm on Sunday", "before 8am on Monday"], // Every Sunday 8:00 PM - Monday 8:00 AM
       automerge: true,
       matchPackagePatterns: [
         "^actions/",
