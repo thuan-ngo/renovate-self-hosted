@@ -9,41 +9,65 @@
   minimumReleaseAge: "14 days",
   dependencyDashboard: true,
   automergeSchedule: false,
-  prConcurrentLimit: 0,
+  prConcurrentLimit: 0, // Update later
   prHourlyLimit: 4,
   semanticCommits: "disabled",
   automergeStrategy: "merge-commit",
-  platformAutomerge: true,
+  platformAutomerge: false,
+  schedule: ["after 7pm on Tuesday", "before 7am on Wednesday"], // Update later
+  automergeSchedule: [
+    "after 7pm every weekday",
+    "before 9am every weekday",
+    "every weekend",
+  ], // Update later
   lockFileMaintenance: {
     enabled: true,
     automerge: false,
     schedule: ["every 3 months on the first day of the month"],
+    branchTopic: "lock-file-maintenance-{{packageFile}}",
+    commitMessageExtra: "({{packageFile}})",
   },
   "packageRules": [
+    /* ------------------------------------------
+      GitHub Actions
+    ------------------------------------------  */
+
+    // Auto-merge minor/patch updates for trusted actions
     {
-      "description": "Official GitHub Actions",
-      "matchManagers": ["github-actions"],
-      "matchPackagePatterns": ["^actions/"],
-      "matchUpdateTypes": ["major"],
-      "branchPrefix": "Garoon-renovate/official-actions/",
-      "automerge": true
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      branchPrefix: "Garoon-renovate-automerge/",
+      schedule: ["after 8pm on Sunday", "before 8am on Monday"], // Every Sunday 8:00 PM - Monday 8:00 AM
+      automerge: true,
+      matchPackagePatterns: [
+        "^actions/",
+        "^cybozu",
+        "^aws-actions/",
+        "^docker/",
+        "^ruby/"
+        ],
     },
+
+    // Third-party actions: manual review, pin digest
     {
-      "description": "Internal Organization Actions",
-      "matchManagers": ["github-actions"],
-      "matchPackagePatterns": ["^cybozu"],
-      "matchUpdateTypes": ["major", "minor", "patch", "digest"],
-      "branchPrefix": "Garoon-renovate/internal-actions/",
-      "automerge": true
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      excludePackagePatterns: ["^actions/", "^cybozu", "^aws-actions/", "^docker/", "^ruby/"],
+      automerge: false,
+      pinDigests: true
     },
+
+    // Disable Renovate GitHub Actions Docker image
     {
-      "description": "Third-party Actions - manual review required",
-      "matchManagers": ["github-actions"],
-      "excludePackagePatterns": ["^actions/", "^cybozu"],
-      "branchPrefix": "Garoon-renovate/third-party-actions/",
-      "automerge": false,
-      "pinDigests": true,
-      "minimumReleaseAge": "30 days"
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["service", "container"],
+      matchPackageNames: [
+        "mysql",
+        "/\\.dkr\\.ecr\\..*\\.amazonaws\\.com//",
+        "/container-registry\\.oracle\\.com/",
+      ],
+      enabled: false,
     }
   ],
   customManagers: [],
