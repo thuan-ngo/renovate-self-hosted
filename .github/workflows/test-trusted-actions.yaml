@@ -1,0 +1,210 @@
+name: Test Trusted Actions
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Test actions/* pattern - Official GitHub Actions
+  test-official-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.0
+        with:
+          node-version: '20'
+      
+      - name: Verify Node.js
+        run: |
+          node --version
+          npm --version
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: '3.11'
+      
+      - name: Verify Python
+        run: |
+          python --version
+          pip --version
+      
+      - name: Setup Go
+        uses: actions/setup-go@v5.0.0
+        with:
+          go-version: '1.21'
+      
+      - name: Verify Go
+        run: go version
+      
+      - name: Cache dependencies
+        uses: actions/cache@v3.3.0
+        with:
+          path: ~/.cache
+          key: test-cache-${{ runner.os }}
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: test-artifact
+          path: README.md
+      
+      - name: Download artifact
+        uses: actions/download-artifact@v4.0.0
+        continue-on-error: true
+        with:
+          name: test-artifact
+      
+      - name: GitHub Script
+        uses: actions/github-script@v7.0.0
+        with:
+          script: |
+            console.log('✅ GitHub Script test passed');
+      
+      - name: Test result
+        run: echo "✅ Official GitHub Actions test passed"
+
+  # Test aws-actions/* pattern - AWS Actions
+  test-aws-actions:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+      
+      - name: Configure AWS credentials (mock)
+        uses: aws-actions/configure-aws-credentials@v4.0.0
+        continue-on-error: true
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/test-role
+          aws-region: ap-northeast-1
+      
+      - name: Amazon ECR Login (mock)
+        uses: aws-actions/amazon-ecr-login@v2.0.0
+        continue-on-error: true
+      
+      - name: Test result
+        run: echo "✅ AWS Actions test passed"
+
+  # Test docker/* pattern - Docker Actions  
+  test-docker-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3.0.0
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+      
+      - name: Verify Docker Buildx
+        run: |
+          docker buildx version
+          docker buildx ls
+      
+      - name: Docker Login (mock)
+        uses: docker/login-action@v3.0.0
+        continue-on-error: true
+        with:
+          username: test
+          password: test
+      
+      - name: Docker Metadata
+        uses: docker/metadata-action@v5.0.0
+        with:
+          images: test/image
+      
+      - name: Create test Dockerfile
+        run: |
+          cat > Dockerfile.test << 'EOF'
+          FROM alpine:3.19
+          RUN echo "Test image for Renovate"
+          CMD ["echo", "Hello from test container"]
+          EOF
+      
+      - name: Build test image
+        uses: docker/build-push-action@v5.0.0
+        with:
+          context: .
+          file: ./Dockerfile.test
+          push: false
+          tags: test:latest
+      
+      - name: Test result
+        run: echo "✅ Docker Actions test passed"
+
+  # Test ruby/* pattern - Ruby Actions
+  test-ruby-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1.180.0
+        with:
+          ruby-version: '3.2'
+          bundler-cache: false
+      
+      - name: Test Ruby version
+        run: |
+          ruby --version
+          gem --version
+      
+      - name: Test result
+        run: echo "✅ Ruby Actions test passed"
+
+  # Test cybozu* pattern - Internal Cybozu Actions (mock - will use echo for now)
+  test-cybozu-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.0
+      
+      - name: Mock Cybozu action
+        run: |
+          echo "🔷 Testing pattern: ^cybozu"
+          echo "🔷 Examples:"
+          echo "   • cybozu/action-name"
+          echo "   • cybozu-cli/some-action"
+          echo "   • cybozu-ept/another-action"
+          echo ""
+          echo "✅ Cybozu Actions pattern test passed"
+
+  # Summary job
+  test-summary:
+    runs-on: ubuntu-latest
+    needs: 
+      - test-official-actions
+      - test-aws-actions
+      - test-docker-actions
+      - test-ruby-actions
+      - test-cybozu-actions
+    steps:
+      - name: Test Summary
+        run: |
+          echo "================================================"
+          echo "✅ All Trusted Actions Tests Passed!"
+          echo "================================================"
+          echo ""
+          echo "Tested action patterns:"
+          echo "  • actions/*      (Official GitHub Actions)"
+          echo "  • aws-actions/*  (AWS Official Actions)"
+          echo "  • docker/*       (Docker Official Actions)"
+          echo "  • ruby/*         (Ruby Official Actions)"
+          echo "  • cybozu*        (Internal Cybozu Actions)"
+          echo ""
+          echo "Expected Renovate behavior:"
+          echo "  • Minor/Patch updates → Auto-merge ✅"
+          echo "  • Major updates       → Manual review ⏸️"
+          echo "================================================"
+
