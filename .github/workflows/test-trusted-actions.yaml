@@ -104,7 +104,7 @@ jobs:
         uses: docker/setup-qemu-action@v3.0.0
       
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.0.0
+        uses: docker/setup-buildx-action@v3.11.1
       
       - name: Verify Docker Buildx
         run: |
