@@ -6,7 +6,7 @@
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
-  minimumReleaseAge: "14 days",
+  minimumReleaseAge: "0 days", // to test
   dependencyDashboard: true,
   automergeSchedule: false,
   prConcurrentLimit: 0, // Update later
