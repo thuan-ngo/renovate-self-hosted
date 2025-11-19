@@ -112,7 +112,7 @@ jobs:
           docker buildx ls
       
       - name: Docker Login (mock)
-        uses: docker/login-action@v3.0.0
+        uses: docker/login-action@v3.6.0
         continue-on-error: true
         with:
           username: test
