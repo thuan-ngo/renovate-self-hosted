@@ -8,7 +8,7 @@
   timezone: "Asia/Tokyo",
   minimumReleaseAge: "0 days", // to test
   dependencyDashboard: true,
-  automergeSchedule: false,
+  automergeSchedule: ["at any time"], // testing
   prConcurrentLimit: 0, // Update later
   prHourlyLimit: 4,
   semanticCommits: "disabled",
