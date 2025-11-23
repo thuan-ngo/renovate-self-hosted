@@ -37,7 +37,7 @@ jobs:
       - name: Notify to Kintone
         uses: ./.github/actions/notify-renovate-to-kintone
         with:
-          kintone-domain: https://votran.kintone.com
+          kintone-domain: votran.kintone.com
           kintone-api-token: ${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}
           app-id: "36"
           branch-name: ${{ github.head_ref }}

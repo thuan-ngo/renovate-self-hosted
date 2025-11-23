@@ -114,7 +114,7 @@ jobs:
             # This ensures consistency with renovate-pr-notification.yaml
             (
               cd .github/actions/notify-renovate-to-kintone
-              KINTONE_DOMAIN="https://votran.kintone.com" \
+              KINTONE_DOMAIN="votran.kintone.com" \
               KINTONE_API_TOKEN="${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}" \
               KINTONE_APP_ID="36" \
               BRANCH_NAME="$branch" \
