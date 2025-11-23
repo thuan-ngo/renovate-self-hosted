@@ -2,7 +2,7 @@ name: Renovate Notification
 
 on:
   pull_request:
-    types: [opened, reopened, closed]
+    types: [opened, reopened, closed, synchronize]
     branches:
       - main
 
@@ -34,6 +34,29 @@ jobs:
             echo "status=open" >> $GITHUB_OUTPUT
           fi
 
+      - name: Get files changed
+        id: files-changed
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { data: files } = await github.rest.pulls.listFiles({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number
+              });
+              
+              const MAX_FILES = 50;
+              const fileList = files.length > MAX_FILES 
+                ? files.slice(0, MAX_FILES).map(f => f.filename).join('\n') + `\n... and ${files.length - MAX_FILES} more files`
+                : files.map(f => f.filename).join('\n');
+              
+              core.setOutput('files', fileList);
+            } catch (error) {
+              core.setOutput('files', 'Unable to fetch files');
+            }
+
       - name: Notify to Kintone
         uses: ./.github/actions/notify-renovate-to-kintone
         with:
@@ -44,3 +67,4 @@ jobs:
           pr-title: ${{ github.event.pull_request.title }}
           pr-status: ${{ steps.pr-status.outputs.status }}
           pr-url: ${{ github.event.pull_request.html_url }}
+          files-changed: ${{ steps.files-changed.outputs.files }}

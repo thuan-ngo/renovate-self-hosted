@@ -9,13 +9,14 @@ const BRANCH_NAME = process.env.BRANCH_NAME || '';
 const PR_TITLE = process.env.PR_TITLE || '';
 const PR_STATUS = process.env.PR_STATUS || '';
 const PR_URL = process.env.PR_URL || '';
-const RECORD_ID = process.env.RECORD_ID || '';
+const FILES_CHANGED = process.env.FILES_CHANGED || '';
 
 // Kintone field codes
 const FIELD_BRANCH_NAME = 'branch_name';
 const FIELD_TITLE = 'title';
 const FIELD_STATUS = 'status';
 const FIELD_PR = 'pr';
+const FIELD_FILES_CHANGED = 'files_changed';
 
 // Initialize Kintone client
 const client = new KintoneRestAPIClient({
@@ -28,11 +29,21 @@ interface RenovateRecord {
     title: { value: string };
     status: { value: string };
     pr: { value: string };
+    files_changed: { value: string };
 }
 
 interface KintoneRecord extends RenovateRecord {
     $id: { value: string };
     $revision: { value: string };
+}
+
+interface PRInfo {
+    number: number;
+    branch: string;
+    title: string;
+    url: string;
+    files: string;
+    state: string;
 }
 
 /**
@@ -67,13 +78,15 @@ async function createRecord(
     branchName: string,
     title: string,
     status: string,
-    prUrl: string
+    prUrl: string,
+    filesChanged: string
 ): Promise<string> {
     const record: Record<string, { value: string }> = {
         [FIELD_BRANCH_NAME]: { value: branchName },
         [FIELD_TITLE]: { value: title },
         [FIELD_STATUS]: { value: status },
         [FIELD_PR]: { value: prUrl },
+        [FIELD_FILES_CHANGED]: { value: filesChanged },
     };
 
     try {
@@ -92,10 +105,26 @@ async function createRecord(
 /**
  * Update existing record in Kintone
  */
-async function updateRecord(recordId: string, status: string): Promise<string> {
+async function updateRecord(
+    recordId: string,
+    status: string,
+    title?: string,
+    prUrl?: string,
+    filesChanged?: string
+): Promise<string> {
     const record: Record<string, { value: string }> = {
         [FIELD_STATUS]: { value: status },
     };
+
+    if (title) {
+        record[FIELD_TITLE] = { value: title };
+    }
+    if (prUrl) {
+        record[FIELD_PR] = { value: prUrl };
+    }
+    if (filesChanged) {
+        record[FIELD_FILES_CHANGED] = { value: filesChanged };
+    }
 
     try {
         await client.record.updateRecord({
@@ -130,33 +159,29 @@ async function main(): Promise<void> {
     console.log(`Title: ${PR_TITLE}`);
     console.log(`Status: ${PR_STATUS}`);
     console.log(`PR URL: ${PR_URL}`);
+    console.log(`Files Changed: ${FILES_CHANGED ? FILES_CHANGED.split('\n').length + ' files' : 'N/A'}`);
 
     let recordId: string;
 
     try {
-        // Check if record ID is provided (for direct updates)
-        if (RECORD_ID) {
-            console.log(`Updating existing record: ${RECORD_ID}`);
-            recordId = await updateRecord(RECORD_ID, PR_STATUS);
-        } else {
-            // Search for existing record by branch name
-            const existingRecord = await findRecordByBranch(BRANCH_NAME);
+        const existingRecord = await findRecordByBranch(BRANCH_NAME);
 
-            if (existingRecord) {
-                console.log(
-                    `Found existing record: ${existingRecord.$id.value}`
-                );
-                recordId = await updateRecord(
+        if (existingRecord) {
+            console.log(
+                `Found existing record: ${existingRecord.$id.value}`
+            );
+            recordId = await updateRecord(
                     existingRecord.$id.value,
-                    PR_STATUS
+                    PR_STATUS,
+                    PR_TITLE,
+                    PR_URL,
+                    FILES_CHANGED
                 );
             } else {
                 console.log('Creating new record...');
-                recordId = await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS, PR_URL);
+                recordId = await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS, PR_URL, FILES_CHANGED);
             }
         }
-
-        console.log(`✅ Record ID: ${recordId}`);
 
         process.exit(0);
     } catch (error) {
@@ -169,7 +194,68 @@ async function main(): Promise<void> {
     }
 }
 
-// Command line interface setup
+/**
+ * Reconcile: Sync all PRs from JSON list
+ */
+async function reconcile(): Promise<void> {
+    if (!KINTONE_DOMAIN || !KINTONE_API_TOKEN) {
+        throw new Error('KINTONE_DOMAIN and KINTONE_API_TOKEN are required');
+    }
+
+    const PR_LIST_JSON = process.env.PR_LIST_JSON || '[]';
+
+    console.log('Starting reconciliation: Syncing all open Renovate PRs to Kintone');
+
+    let prList: PRInfo[];
+    try {
+        prList = JSON.parse(PR_LIST_JSON);
+    } catch (error) {
+        throw new Error('Invalid PR_LIST_JSON format');
+    }
+
+    if (prList.length === 0) {
+        console.log('No Renovate PRs to sync');
+        return;
+    }
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < prList.length; i++) {
+        const pr = prList[i];
+        console.log(`[${i + 1}/${prList.length}] Processing PR: ${pr.branch}`);
+
+        try {
+            const existingRecord = await findRecordByBranch(pr.branch);
+
+            if (existingRecord) {
+                console.log(`  Record already exists (current status: ${existingRecord.status.value}), skipping...`);
+            } else {
+                console.log(`  Creating new record with status: ${pr.state}`);
+                await createRecord(pr.branch, pr.title, pr.state, pr.url, pr.files);
+            }
+
+            successCount++;
+        } catch (error) {
+            console.error(`Error: ${error instanceof Error ? error.message : error}`);
+            failCount++;
+        }
+
+        if (i < prList.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+    }
+
+    console.log('Reconciliation completed\n');
+    console.log(`Success: ${successCount}, Failed: ${failCount}`);
+}
+
+program
+    .command('reconcile')
+    .description('Sync all open Renovate PRs to Kintone')
+    .action(reconcile);
+
+// Command line setup
 program.description('Notify Kintone app about Renovate PR').action(main);
 
 // Execute if run directly
@@ -177,4 +263,4 @@ if (require.main === module) {
     program.parse(process.argv);
 }
 
-export { findRecordByBranch, createRecord, updateRecord };
+export { findRecordByBranch, createRecord, updateRecord, reconcile };

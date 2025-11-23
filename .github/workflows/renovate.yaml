@@ -84,50 +84,54 @@ jobs:
               pr.head.ref.startsWith('Garoon-renovate')
             );
             
-            core.setOutput('pr-list', JSON.stringify(renovatePRs.map(pr => ({
-              branch: pr.head.ref,
-              title: pr.title,
-              number: pr.number
-            }))));
+            const MAX_FILES = 50;
+            const prListWithFiles = await Promise.all(
+              renovatePRs.map(async (pr) => {
+                try {
+                  const { data: files } = await github.rest.pulls.listFiles({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    pull_number: pr.number
+                  });
+                  
+                  const fileList = files.length > MAX_FILES 
+                    ? files.slice(0, MAX_FILES).map(f => f.filename).join('\n') + `\n... and ${files.length - MAX_FILES} more files`
+                    : files.map(f => f.filename).join('\n');
+                  
+                  return {
+                    number: pr.number,
+                    branch: pr.head.ref,
+                    title: pr.title,
+                    url: pr.html_url,
+                    files: fileList,
+                    state: pr.state
+                  };
+                } catch (error) {
+                  console.log(`Failed to fetch files for PR #${pr.number}:`, error.message);
+                  return {
+                    number: pr.number,
+                    branch: pr.head.ref,
+                    title: pr.title,
+                    url: pr.html_url,
+                    files: 'Unable to fetch files',
+                    state: pr.state
+                  };
+                }
+              })
+            );
+            
+            core.setOutput('pr-list', JSON.stringify(prListWithFiles));
             
             console.log(`Found ${renovatePRs.length} open Renovate PRs to sync`);
 
       - name: Sync PRs to Kintone (Reconciliation)
         if: always() && steps.get-prs.outputs.pr-list != '[]'
         continue-on-error: true
-        shell: bash
+        working-directory: .github/actions/notify-renovate-to-kintone
         run: |
-          echo "🔄 Reconciliation: Syncing all open Renovate PRs to Kintone"
-          echo "This ensures data consistency even if event-driven notifications failed"
-          
-          pr_count=0
-          total=$(echo '${{ steps.get-prs.outputs.pr-list }}' | jq '. | length')
-          
-          echo '${{ steps.get-prs.outputs.pr-list }}' | jq -c '.[]' | while read -r pr; do
-            branch=$(echo "$pr" | jq -r '.branch')
-            title=$(echo "$pr" | jq -r '.title')
-            number=$(echo "$pr" | jq -r '.number')
-            pr_url="https://github.com/${{ github.repository }}/pull/$number"
-            pr_count=$((pr_count + 1))
-          
-            echo "[$pr_count/$total] Processing PR: $branch"
-          
-            # Call the same notification script used by the composite action
-            # This ensures consistency with renovate-pr-notification.yaml
-            (
-              cd .github/actions/notify-renovate-to-kintone
-              KINTONE_DOMAIN="votran.kintone.com" \
-              KINTONE_API_TOKEN="${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}" \
-              KINTONE_APP_ID="36" \
-              BRANCH_NAME="$branch" \
-              PR_TITLE="$title" \
-              PR_STATUS="open" \
-              PR_URL="$pr_url" \
-              pnpm exec ts-node notify.ts
-            ) && echo "  ✅ Success" || echo "  ⚠️ Failed to sync $branch"
-            
-            # Rate limiting: Wait 0.5s between requests to respect Kintone API limits
-            sleep 0.5
-          done
-          
-          echo "✅ Reconciliation completed"
+          pnpm exec ts-node notify.ts reconcile
+        env:
+          KINTONE_DOMAIN: votran.kintone.com
+          KINTONE_API_TOKEN: ${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}
+          KINTONE_APP_ID: "36"
+          PR_LIST_JSON: ${{ steps.get-prs.outputs.pr-list }}

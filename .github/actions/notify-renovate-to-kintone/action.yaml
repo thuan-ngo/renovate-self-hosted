@@ -23,15 +23,13 @@ inputs:
     required: true
   pr-url:
     description: "Pull request URL (e.g., https://github.com/owner/repo/pull/123)"
-    required: false
+    required: true
+  files-changed:
+    description: "List of files changed in the PR (newline-separated)"
+    required: true
   record-id:
     description: "Existing Kintone record ID (for updates)"
     required: false
-
-outputs:
-  record-id:
-    description: "The Kintone record ID created or updated"
-    value: ${{ steps.notify.outputs.record-id }}
 
 runs:
   using: "composite"
@@ -70,4 +68,5 @@ runs:
         PR_TITLE: ${{ inputs.pr-title }}
         PR_STATUS: ${{ inputs.pr-status }}
         PR_URL: ${{ inputs.pr-url }}
+        FILES_CHANGED: ${{ inputs.files-changed }}
         RECORD_ID: ${{ inputs.record-id }}
