@@ -47,7 +47,7 @@ async function findRecordByBranch(
         });
 
         if (response.records && response.records.length > 0) {
-            return response.records[0] as KintoneRecord;
+            return response.records[0] as unknown as KintoneRecord;
         }
 
         return null;
