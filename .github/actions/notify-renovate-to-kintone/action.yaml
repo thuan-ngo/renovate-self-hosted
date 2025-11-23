@@ -1,0 +1,69 @@
+name: notify-renovate-to-kintone
+description: Notify Kintone app about Renovate PR
+
+inputs:
+  kintone-domain:
+    description: "Kintone domain (e.g., renovate-f2512-1.cybozu-dev.com)"
+    required: true
+  kintone-api-token:
+    description: "Kintone API token"
+    required: true
+  app-id:
+    description: "Kintone app ID"
+    required: true
+    default: "1"
+  branch-name:
+    description: "Branch name of the PR"
+    required: true
+  pr-title:
+    description: "Pull request title/summary"
+    required: true
+  pr-status:
+    description: "Pull request status (open/closed/merged)"
+    required: true
+  record-id:
+    description: "Existing Kintone record ID (for updates)"
+    required: false
+
+outputs:
+  record-id:
+    description: "The Kintone record ID created or updated"
+    value: ${{ steps.notify.outputs.record-id }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.17.1
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.15.0'
+        cache: 'pnpm'
+        cache-dependency-path: ${{ github.action_path }}/pnpm-lock.yaml
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: |-
+        MINIMUM_RELEASE_AGE=$(pnpm config get minimumReleaseAge)
+        echo "minimumReleaseAge: $MINIMUM_RELEASE_AGE"
+        pnpm install --frozen-lockfile
+
+    - name: Notify to Kintone
+      id: notify
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: |
+        pnpm exec ts-node notify.ts
+      env:
+        KINTONE_DOMAIN: ${{ inputs.kintone-domain }}
+        KINTONE_API_TOKEN: ${{ inputs.kintone-api-token }}
+        KINTONE_APP_ID: ${{ inputs.app-id }}
+        BRANCH_NAME: ${{ inputs.branch-name }}
+        PR_TITLE: ${{ inputs.pr-title }}
+        PR_STATUS: ${{ inputs.pr-status }}
+        RECORD_ID: ${{ inputs.record-id }}

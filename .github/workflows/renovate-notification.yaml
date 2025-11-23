@@ -1,0 +1,45 @@
+name: Renovate Notification
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+    branches:
+      - main
+
+concurrency:
+  group: renovate-notify-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  notify-kintone:
+    if: startsWith(github.head_ref, 'Garoon-renovate')
+    runs-on: [self-hosted, internal-network]
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Determine PR status
+        id: pr-status
+        run: |
+          if [ "${{ github.event.pull_request.merged }}" == "true" ]; then
+            echo "status=merged" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.action }}" == "closed" ]; then
+            echo "status=closed" >> $GITHUB_OUTPUT
+          else
+            echo "status=open" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify to Kintone
+        uses: ./.github/actions/notify-renovate-to-kintone
+        with:
+          kintone-domain: https://votran.kintone.com
+          kintone-api-token: ${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}
+          app-id: "36"
+          branch-name: ${{ github.head_ref }}
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-status: ${{ steps.pr-status.outputs.status }}

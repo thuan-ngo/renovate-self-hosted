@@ -43,4 +43,88 @@ jobs:
           RENOVATE_LOG_LEVEL: ${{ github.event.inputs.log-level || 'info' }}
           LOG_LEVEL: ${{ github.event.inputs.log-level || 'info' }}
 
-#     Config notify if needed
+      - name: Setup pnpm for notification
+        if: always()
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - name: Setup Node.js for notification
+        if: always()
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.0'
+          cache: 'pnpm'
+          cache-dependency-path: .github/actions/notify-renovate-to-kintone/pnpm-lock.yaml
+
+      - name: Install dependencies
+        if: always()
+        working-directory: .github/actions/notify-renovate-to-kintone
+        run: pnpm install --frozen-lockfile
+
+
+      # PRIMARY PURPOSE: Ensure all open Renovate PRs have records in Kintone
+      # This is the main mechanism to guarantee data completeness
+      # Event-driven notifications (renovate-pr-notification.yaml) are bonus for real-time updates
+      # but this periodic sync is the SOURCE OF TRUTH
+      - name: Get Renovate PRs
+        id: get-prs
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.generate-github-app-token.outputs.token }}
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+            
+            const renovatePRs = pulls.filter(pr => 
+              pr.head.ref.startsWith('Garoon-renovate')
+            );
+            
+            core.setOutput('pr-list', JSON.stringify(renovatePRs.map(pr => ({
+              branch: pr.head.ref,
+              title: pr.title,
+              number: pr.number
+            }))));
+            
+            console.log(`Found ${renovatePRs.length} open Renovate PRs to sync`);
+
+      - name: Sync PRs to Kintone (Reconciliation)
+        if: always() && steps.get-prs.outputs.pr-list != '[]'
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "🔄 Reconciliation: Syncing all open Renovate PRs to Kintone"
+          echo "This ensures data consistency even if event-driven notifications failed"
+          
+          pr_count=0
+          total=$(echo '${{ steps.get-prs.outputs.pr-list }}' | jq '. | length')
+          
+          echo '${{ steps.get-prs.outputs.pr-list }}' | jq -c '.[]' | while read -r pr; do
+            branch=$(echo "$pr" | jq -r '.branch')
+            title=$(echo "$pr" | jq -r '.title')
+            pr_count=$((pr_count + 1))
+          
+            echo "[$pr_count/$total] Processing PR: $branch"
+          
+            # Call the same notification script used by the composite action
+            # This ensures consistency with renovate-pr-notification.yaml
+            (
+              cd .github/actions/notify-renovate-to-kintone
+              KINTONE_DOMAIN="https://votran.kintone.com" \
+              KINTONE_API_TOKEN="${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}" \
+              KINTONE_APP_ID="36" \
+              BRANCH_NAME="$branch" \
+              PR_TITLE="$title" \
+              PR_STATUS="open" \
+              pnpm exec ts-node notify.ts
+            ) && echo "  ✅ Success" || echo "  ⚠️ Failed to sync $branch"
+            
+            # Rate limiting: Wait 0.5s between requests to respect Kintone API limits
+            sleep 0.5
+          done
+          
+          echo "✅ Reconciliation completed"
