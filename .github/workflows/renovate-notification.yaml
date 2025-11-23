@@ -43,3 +43,4 @@ jobs:
           branch-name: ${{ github.head_ref }}
           pr-title: ${{ github.event.pull_request.title }}
           pr-status: ${{ steps.pr-status.outputs.status }}
+          pr-url: ${{ github.event.pull_request.html_url }}

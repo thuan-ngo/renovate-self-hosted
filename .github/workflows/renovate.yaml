@@ -106,6 +106,8 @@ jobs:
           echo '${{ steps.get-prs.outputs.pr-list }}' | jq -c '.[]' | while read -r pr; do
             branch=$(echo "$pr" | jq -r '.branch')
             title=$(echo "$pr" | jq -r '.title')
+            number=$(echo "$pr" | jq -r '.number')
+            pr_url="https://github.com/${{ github.repository }}/pull/$number"
             pr_count=$((pr_count + 1))
           
             echo "[$pr_count/$total] Processing PR: $branch"
@@ -120,6 +122,7 @@ jobs:
               BRANCH_NAME="$branch" \
               PR_TITLE="$title" \
               PR_STATUS="open" \
+              PR_URL="$pr_url" \
               pnpm exec ts-node notify.ts
             ) && echo "  ✅ Success" || echo "  ⚠️ Failed to sync $branch"
             

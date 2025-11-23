@@ -8,12 +8,14 @@ const KINTONE_APP_ID = process.env.KINTONE_APP_ID || '1';
 const BRANCH_NAME = process.env.BRANCH_NAME || '';
 const PR_TITLE = process.env.PR_TITLE || '';
 const PR_STATUS = process.env.PR_STATUS || '';
+const PR_URL = process.env.PR_URL || '';
 const RECORD_ID = process.env.RECORD_ID || '';
 
 // Kintone field codes
 const FIELD_BRANCH_NAME = 'branch_name';
 const FIELD_TITLE = 'title';
 const FIELD_STATUS = 'status';
+const FIELD_PR = 'pr';
 
 // Initialize Kintone client
 const client = new KintoneRestAPIClient({
@@ -25,6 +27,7 @@ interface RenovateRecord {
     branch_name: { value: string };
     title: { value: string };
     status: { value: string };
+    pr: { value: string };
 }
 
 interface KintoneRecord extends RenovateRecord {
@@ -63,12 +66,14 @@ async function findRecordByBranch(
 async function createRecord(
     branchName: string,
     title: string,
-    status: string
+    status: string,
+    prUrl: string
 ): Promise<string> {
     const record: Record<string, { value: string }> = {
         [FIELD_BRANCH_NAME]: { value: branchName },
         [FIELD_TITLE]: { value: title },
         [FIELD_STATUS]: { value: status },
+        [FIELD_PR]: { value: prUrl },
     };
 
     try {
@@ -124,6 +129,7 @@ async function main(): Promise<void> {
     console.log(`Branch: ${BRANCH_NAME}`);
     console.log(`Title: ${PR_TITLE}`);
     console.log(`Status: ${PR_STATUS}`);
+    console.log(`PR URL: ${PR_URL}`);
 
     let recordId: string;
 
@@ -146,7 +152,7 @@ async function main(): Promise<void> {
                 );
             } else {
                 console.log('Creating new record...');
-                recordId = await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS);
+                recordId = await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS, PR_URL);
             }
         }
 

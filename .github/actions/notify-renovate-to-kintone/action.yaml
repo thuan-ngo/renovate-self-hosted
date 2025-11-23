@@ -21,6 +21,9 @@ inputs:
   pr-status:
     description: "Pull request status (open/closed/merged)"
     required: true
+  pr-url:
+    description: "Pull request URL (e.g., https://github.com/owner/repo/pull/123)"
+    required: false
   record-id:
     description: "Existing Kintone record ID (for updates)"
     required: false
@@ -66,4 +69,5 @@ runs:
         BRANCH_NAME: ${{ inputs.branch-name }}
         PR_TITLE: ${{ inputs.pr-title }}
         PR_STATUS: ${{ inputs.pr-status }}
+        PR_URL: ${{ inputs.pr-url }}
         RECORD_ID: ${{ inputs.record-id }}
