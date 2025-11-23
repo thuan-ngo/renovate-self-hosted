@@ -17,7 +17,7 @@ permissions:
 jobs:
   notify-kintone:
     if: startsWith(github.head_ref, 'Garoon-renovate')
-    runs-on: [self-hosted, internal-network]
+    runs-on: [self-hosted]
     timeout-minutes: 10
     steps:
       - name: Checkout repository
