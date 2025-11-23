@@ -49,13 +49,13 @@ jobs:
           key: test-cache-${{ runner.os }}
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: test-artifact
           path: README.md
       
       - name: Download artifact
-        uses: actions/download-artifact@v4.3.0
+        uses: actions/download-artifact@v6.0.0
         continue-on-error: true
         with:
           name: test-artifact
