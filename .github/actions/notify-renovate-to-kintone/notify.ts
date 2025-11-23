@@ -161,8 +161,6 @@ async function main(): Promise<void> {
     console.log(`PR URL: ${PR_URL}`);
     console.log(`Files Changed: ${FILES_CHANGED ? FILES_CHANGED.split('\n').length + ' files' : 'N/A'}`);
 
-    let recordId: string;
-
     try {
         const existingRecord = await findRecordByBranch(BRANCH_NAME);
 
@@ -170,17 +168,16 @@ async function main(): Promise<void> {
             console.log(
                 `Found existing record: ${existingRecord.$id.value}`
             );
-            recordId = await updateRecord(
-                    existingRecord.$id.value,
-                    PR_STATUS,
-                    PR_TITLE,
-                    PR_URL,
-                    FILES_CHANGED
-                );
-            } else {
-                console.log('Creating new record...');
-                recordId = await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS, PR_URL, FILES_CHANGED);
-            }
+            await updateRecord(
+                existingRecord.$id.value,
+                PR_STATUS,
+                PR_TITLE,
+                PR_URL,
+                FILES_CHANGED
+            );
+        } else {
+            console.log('Creating new record...');
+            await createRecord(BRANCH_NAME, PR_TITLE, PR_STATUS, PR_URL, FILES_CHANGED);
         }
 
         process.exit(0);
