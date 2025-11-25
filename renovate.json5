@@ -42,16 +42,7 @@
         ],
     },
 
-    // Third-party actions: manual review, pin digest
-    {
-      matchManagers: ["github-actions"],
-      matchDepTypes: ["action"],
-      excludePackagePatterns: ["^actions/", "^cybozu", "^aws-actions/", "^docker/", "^ruby/"],
-      automerge: false,
-      pinDigests: true
-    },
-
-    // Disable Renovate GitHub Actions Docker image
+    // Disable Docker images updates (MySQL, AWS ECR, Oracle Container Registry)
     {
       matchManagers: ["github-actions"],
       matchDepTypes: ["service", "container"],
@@ -60,6 +51,13 @@
         "/\\.dkr\\.ecr\\..*\\.amazonaws\\.com//",
         "/container-registry\\.oracle\\.com/",
       ],
+      enabled: false,
+    },
+
+    // Disable runtime version updates (Node.js, Java, Python)
+    {
+      matchManagers: ["github-actions"],
+      matchPackagePatterns: ["^(node|java|python)$"],
       enabled: false,
     }
   ],
