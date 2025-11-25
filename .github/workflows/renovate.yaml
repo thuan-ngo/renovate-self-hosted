@@ -47,7 +47,7 @@ jobs:
         if: always()
         uses: pnpm/action-setup@v4
         with:
-          version: 10.17.1
+          version: 10.23.0
 
       - name: Setup Node.js for notification
         if: always()
