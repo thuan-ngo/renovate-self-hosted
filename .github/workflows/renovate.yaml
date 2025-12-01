@@ -131,7 +131,7 @@ jobs:
         run: |
           pnpm exec ts-node notify.ts reconcile
         env:
-          KINTONE_DOMAIN: votran.kintone.com
+          KINTONE_DOMAIN: thuan-ngo.kintone.com
           KINTONE_API_TOKEN: ${{ secrets.KINTONE_RENOVATE_APP_TOKEN }}
-          KINTONE_APP_ID: "36"
+          KINTONE_APP_ID: "1"
           PR_LIST_JSON: ${{ steps.get-prs.outputs.pr-list }}
