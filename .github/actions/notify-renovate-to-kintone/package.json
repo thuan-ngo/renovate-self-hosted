@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@kintone/rest-api-client": "^3.3.15",
-    "commander": "^10.0.1"
+    "commander": "^14.0.0"
   },
   "devDependencies": {
     "@cybozu/eslint-config": "^20.0.0",
