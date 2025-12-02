@@ -6,7 +6,7 @@
   "dependencies": {
     "express": "4.17.0",
     "lodash": "4.17.19",
-    "axios": "0.26.0"
+    "axios": "0.30.2"
   },
   "devDependencies": {
     "typescript": "4.9.0",
