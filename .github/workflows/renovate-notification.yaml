@@ -37,7 +37,7 @@ jobs:
       - name: Get files changed
         id: files-changed
         continue-on-error: true
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             try {
