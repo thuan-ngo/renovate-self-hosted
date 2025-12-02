@@ -21,6 +21,9 @@ permissions:
 jobs:
   renovate:
     runs-on: [ self-hosted ]
+    strategy:
+      matrix:
+        branch: [main, dev1, dev2]
     steps:
       - name: Generate GitHub Apps token
         id: generate-github-app-token
@@ -31,6 +34,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
 
       - name: Run self-hosted Renovate
         uses: renovatebot/github-action@a3c115cd6676c8a5bc72f9715f108759e570daf5 # v43.0.19
