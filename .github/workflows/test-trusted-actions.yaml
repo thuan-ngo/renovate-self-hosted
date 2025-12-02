@@ -119,7 +119,7 @@ jobs:
           password: test
       
       - name: Docker Metadata
-        uses: docker/metadata-action@v5.9.0
+        uses: docker/metadata-action@v5.10.0
         with:
           images: test/image
       
