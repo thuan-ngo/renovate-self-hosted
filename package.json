@@ -1,0 +1,17 @@
+{
+  "name": "renovate-self-hosted-test",
+  "version": "1.0.0",
+  "description": "Test repo for Renovate bot",
+  "private": true,
+  "dependencies": {
+    "express": "4.18.0",
+    "lodash": "4.17.20",
+    "axios": "0.27.0"
+  },
+  "devDependencies": {
+    "typescript": "5.0.0",
+    "eslint": "8.40.0",
+    "@types/node": "18.0.0"
+  }
+}
+
