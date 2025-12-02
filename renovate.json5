@@ -1,7 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  baseBranchPatterns: ["main"],
+  baseBranches: ["main"],
   enabledManagers: [],
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
