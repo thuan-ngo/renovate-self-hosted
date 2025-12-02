@@ -1,8 +1,8 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  baseBranchPatterns: ["main"],
-  enabledManagers: [],
+  baseBranchPatterns: ["dev2"],
+  enabledManagers: ["npm"],
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
@@ -21,6 +21,24 @@
     branchTopic: "lock-file-maintenance-{{packageFile}}",
     commitMessageExtra: "({{packageFile}})",
   },
-  "packageRules": [],
+  "packageRules": [
+    /* ------------------------------------------
+      npm packages
+    ------------------------------------------  */
+
+    {
+      matchManagers: ["npm"],
+      matchUpdateTypes: ["minor", "patch"],
+      branchPrefix: "Garoon-renovate-automerge/",
+      automerge: true,
+    },
+
+    {
+      matchManagers: ["npm"],
+      matchUpdateTypes: ["major"],
+      branchPrefix: "Garoon-renovate/",
+      automerge: false,
+    }
+  ],
   customManagers: [],
 }
