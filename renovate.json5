@@ -3,7 +3,6 @@
   extends: ["config:recommended"],
   baseBranches: ["main", "dev1", "dev2"],
   useBaseBranchConfig: "merge",
-  enabledManagers: [],
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
@@ -22,6 +21,11 @@
     branchTopic: "lock-file-maintenance-{{packageFile}}",
     commitMessageExtra: "({{packageFile}})",
   },
-  "packageRules": [],
+  "packageRules": [
+    {
+      matchBaseBranches: ["main"],
+      enabled: false
+    }
+  ],
   customManagers: [],
 }
