@@ -1,8 +1,8 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  baseBranchPatterns: ["main"],
-  enabledManagers: [],
+  baseBranchPatterns: ["dev1"],
+  enabledManagers: ["github-actions"],
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
@@ -21,6 +21,45 @@
     branchTopic: "lock-file-maintenance-{{packageFile}}",
     commitMessageExtra: "({{packageFile}})",
   },
-  "packageRules": [],
+  "packageRules": [
+    /* ------------------------------------------
+      GitHub Actions
+    ------------------------------------------  */
+
+    // Auto-merge minor/patch updates for trusted actions
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchUpdateTypes: ["minor", "patch"],
+      branchPrefix: "Garoon-renovate-automerge/",
+      automerge: true,
+      matchPackagePatterns: [
+        "^actions/",
+        "^cybozu",
+        "^aws-actions/",
+        "^docker/",
+        "^ruby/"
+        ],
+    },
+
+    // Disable Docker images updates (MySQL, AWS ECR, Oracle Container Registry)
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["service", "container"],
+      matchPackageNames: [
+        "mysql",
+        "/\\.dkr\\.ecr\\..*\\.amazonaws\\.com//",
+        "/container-registry\\.oracle\\.com/",
+      ],
+      enabled: false,
+    },
+
+    // Disable runtime version updates (Node.js, Java, Python)
+    {
+      matchManagers: ["github-actions"],
+      matchPackagePatterns: ["^(node|java|python)$"],
+      enabled: false,
+    }
+  ],
   customManagers: [],
 }
