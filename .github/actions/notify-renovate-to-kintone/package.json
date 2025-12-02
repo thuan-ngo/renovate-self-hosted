@@ -6,7 +6,7 @@
     "notify": "ts-node notify.ts"
   },
   "dependencies": {
-    "@kintone/rest-api-client": "^3.3.15",
+    "@kintone/rest-api-client": "^6.0.0",
     "commander": "^10.0.1"
   },
   "devDependencies": {
