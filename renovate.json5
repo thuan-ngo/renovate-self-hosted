@@ -10,7 +10,7 @@
   dependencyDashboard: true,
   automergeSchedule: ["at any time"], // testing
   prConcurrentLimit: 0, // Update later
-  prHourlyLimit: 4,
+  prHourlyLimit: 0,
   semanticCommits: "disabled",
   automergeStrategy: "merge-commit",
   platformAutomerge: false,
