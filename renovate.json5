@@ -8,6 +8,7 @@
   timezone: "Asia/Tokyo",
   minimumReleaseAge: "0 days", // to test
   dependencyDashboard: true,
+  dependencyDashboardRepository: "thuan-ngo/renovate-dashboard",
   automergeSchedule: ["at any time"], // testing
   prConcurrentLimit: 0, // Update later
   prHourlyLimit: 0,
