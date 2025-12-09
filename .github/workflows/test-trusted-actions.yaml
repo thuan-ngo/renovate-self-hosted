@@ -187,7 +187,7 @@ jobs:
         uses: actions/checkout@v4.3.1
       
       - name: JFrog CLI (third-party)
-        uses: jfrog/setup-jfrog-cli@v4.5.8
+        uses: jfrog/setup-jfrog-cli@5b06f730cc5a6f55d78b30753f8583454b08c0aa # v4.8.1
         continue-on-error: true
       
       - name: Gradle Build Action (third-party)
