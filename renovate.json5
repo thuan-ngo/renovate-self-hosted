@@ -34,12 +34,42 @@
       branchPrefix: "Garoon-renovate-automerge/",
       automerge: true,
       matchPackageNames: [
-        "/^actions\\//",
-        "/^cybozu/",
-        "/^aws-actions\\//",
-        "/^docker\\//",
-        "/^ruby\\//"
-        ],
+        "actions/**",
+        "cybozu**",
+        "aws-actions/**",
+        "docker/**",
+        "ruby/**"
+      ],
+    },
+
+    // Major updates: always separate, no automerge
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchUpdateTypes: ["major"],
+      automerge: false,
+      matchPackageNames: [
+        "actions/**",
+        "cybozu**",
+        "aws-actions/**",
+        "docker/**",
+        "ruby/**"
+      ],
+    },
+
+    // Third-party actions: manual review, pin digest
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchPackageNames: [
+        "!actions/**",
+        "!cybozu**",
+        "!aws-actions/**",
+        "!docker/**",
+        "!ruby/**"
+      ],
+      automerge: false,
+      pinDigests: true
     },
 
     // Disable Docker images updates (MySQL, AWS ECR, Oracle Container Registry)
@@ -57,7 +87,11 @@
     // Disable runtime version updates (Node.js, Java, Python)
     {
       matchManagers: ["github-actions"],
-      matchPackageNames: ["/^(node|java|python)$/"],
+      matchPackageNames: [
+        "node",
+        "java",
+        "python"
+      ],
       enabled: false,
     }
   ],
