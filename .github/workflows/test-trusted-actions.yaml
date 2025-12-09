@@ -187,15 +187,15 @@ jobs:
         uses: actions/checkout@v4.3.1
       
       - name: JFrog CLI (third-party)
-        uses: jfrog/setup-jfrog-cli@v4.5.8
+        uses: jfrog/setup-jfrog-cli@611876cbed7d009aab97257020a59ddde6e840c0 # v4.5.8
         continue-on-error: true
       
       - name: Gradle Build Action (third-party)
-        uses: gradle/actions/setup-gradle@v4.4.1
+        uses: gradle/actions/setup-gradle@ac638b010cf58a27ee6c972d7336334ccaf61c96 # v4.4.1
         continue-on-error: true
       
       - name: Snyk Security (third-party)
-        uses: snyk/actions/setup@0.4.0
+        uses: snyk/actions/setup@b98d498629f1c368650224d6d212bf7dfa89e4bf # 0.4.0
         continue-on-error: true
       
       - name: Test result
