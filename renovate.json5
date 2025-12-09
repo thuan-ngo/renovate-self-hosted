@@ -1,14 +1,13 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:recommended"],
-  baseBranches: ["main", "dev1", "dev2"],
+  baseBranchPatterns: [],
   useBaseBranchConfig: "merge",
   branchPrefix: "Garoon-renovate/",
   labels: ["renovate"],
   timezone: "Asia/Tokyo",
   minimumReleaseAge: "0 days", // to test
   dependencyDashboard: true,
-  dependencyDashboardRepository: "thuan-ngo/renovate-dashboard",
   automergeSchedule: ["at any time"], // testing
   prConcurrentLimit: 0, // Update later
   prHourlyLimit: 0,
@@ -22,11 +21,6 @@
     branchTopic: "lock-file-maintenance-{{packageFile}}",
     commitMessageExtra: "({{packageFile}})",
   },
-  "packageRules": [
-    {
-      matchBaseBranches: ["main"],
-      enabled: false
-    }
-  ],
+  "packageRules": [],
   customManagers: [],
 }
