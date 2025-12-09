@@ -10,8 +10,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
       
@@ -21,8 +21,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4.3.1
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
       
@@ -33,4 +33,41 @@ jobs:
       
       - name: Run lint
         run: echo "✅ Linting passed successfully"
+
+  test-third-party-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4.3.1
+      
+      - name: Codecov (third-party - should pinDigests)
+        uses: codecov/codecov-action@v5.4.3
+        continue-on-error: true
+        with:
+          fail_ci_if_error: false
+      
+      - name: Slack Notification (third-party - should pinDigests)
+        uses: slackapi/slack-github-action@v2.1.0
+        continue-on-error: true
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": "CI test"}
+      
+      - name: SonarQube Scan (third-party - should pinDigests)
+        uses: sonarsource/sonarqube-scan-action@v5.2.0
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      
+      - name: Test result
+        run: |
+          echo "================================================"
+          echo "✅ Third-party actions test completed"
+          echo "================================================"
+          echo "These actions should:"
+          echo "  • Have pinDigests enabled"
+          echo "  • Require manual review (no automerge)"
+          echo "================================================"
 
