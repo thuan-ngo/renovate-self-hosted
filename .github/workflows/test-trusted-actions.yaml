@@ -195,7 +195,7 @@ jobs:
         continue-on-error: true
       
       - name: Snyk Security (third-party)
-        uses: snyk/actions/setup@0.4.0
+        uses: snyk/actions/setup@de2dda699bf7276d103ed6a72a5bc5a1871ad658 # v0.5.0
         continue-on-error: true
       
       - name: Test result
