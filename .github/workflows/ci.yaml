@@ -55,7 +55,7 @@ jobs:
             {"text": "CI test"}
       
       - name: SonarQube Scan (third-party - should pinDigests)
-        uses: sonarsource/sonarqube-scan-action@v5.2.0
+        uses: sonarsource/sonarqube-scan-action@a31c9398be7ace6bbfaf30c0bd5d415f843d45e9 # v7.0.0
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
