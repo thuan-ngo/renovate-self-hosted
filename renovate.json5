@@ -84,13 +84,14 @@
       enabled: false,
     },
 
-    // Disable runtime version updates (Node.js, Java, Python)
+    // Disable runtime version updates (Node, Java, Python, ...)
     {
       matchManagers: ["github-actions"],
-      matchPackageNames: [
-        "node",
-        "java",
-        "python"
+      matchDatasources: [
+        "node-version",
+        "java-version",
+        "python-version",
+        "ruby-version"
       ],
       enabled: false,
     }
