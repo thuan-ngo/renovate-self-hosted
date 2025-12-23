@@ -26,30 +26,6 @@
       GitHub Actions
     ------------------------------------------  */
 
-    // Disable runtime version updates in GitHub Actions workflows (MUST BE FIRST)
-    {
-      matchManagers: ["github-actions"],
-      matchDepNames: [
-        "node",
-        "python",
-        "java",
-        "ruby",
-        "go"
-      ],
-      enabled: false,
-    },
-
-    // Disable version file updates (.node-version, .python-version, .ruby-version, .java-version)
-    {
-      matchDatasources: [
-        "node-version",
-        "python-version",
-        "ruby-version",
-        "java-version"
-      ],
-      enabled: false,
-    },
-
     // Auto-merge minor/patch updates for trusted actions
     {
       matchManagers: ["github-actions"],
@@ -94,6 +70,19 @@
       ],
       automerge: false,
       pinDigests: true
+    },
+
+    // Disable runtime version updates
+    {
+      matchManagers: ["github-actions"],
+      matchDepNames: [
+        "node",
+        "python",
+        "java",
+        "ruby",
+        "go"
+      ],
+      enabled: false,
     },
 
     // Disable Docker images updates (MySQL, AWS ECR, Oracle Container Registry)
