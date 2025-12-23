@@ -84,14 +84,25 @@
       enabled: false,
     },
 
-    // Disable runtime version updates (Node, Java, Python, ...)
+    // Disable runtime version updates in GitHub Actions workflows
     {
       matchManagers: ["github-actions"],
+      matchPackageNames: [
+        "node",
+        "python",
+        "java",
+        "ruby"
+      ],
+      enabled: false,
+    },
+
+    // Disable version file updates (.node-version, .python-version, .ruby-version, .java-version)
+    {
       matchDatasources: [
         "node-version",
-        "java-version",
         "python-version",
-        "ruby-version"
+        "ruby-version",
+        "java-version"
       ],
       enabled: false,
     }
