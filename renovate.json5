@@ -29,11 +29,12 @@
     // Disable runtime version updates in GitHub Actions workflows (MUST BE FIRST)
     {
       matchManagers: ["github-actions"],
-      matchPackageNames: [
+      matchDepNames: [
         "node",
         "python",
         "java",
-        "ruby"
+        "ruby",
+        "go"
       ],
       enabled: false,
     },
