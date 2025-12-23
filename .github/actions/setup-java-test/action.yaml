@@ -1,0 +1,10 @@
+name: Setup Java Test
+description: Test composite action for Java version updates
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 11

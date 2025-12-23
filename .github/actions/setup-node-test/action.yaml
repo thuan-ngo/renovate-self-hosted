@@ -1,0 +1,9 @@
+name: Setup Node.js Test
+description: Test composite action for Node.js version updates
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18.20.0
