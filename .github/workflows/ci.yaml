@@ -61,6 +61,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
+      - name: GitHub Release (third-party - should pinDigests)
+        uses: softprops/action-gh-release@cd28b0f5ee8571b76cfdaa62a30d51d752317477
+        continue-on-error: true
+        with:
+          draft: true
+          files: README.md
+      
       - name: Test result
         run: |
           echo "================================================"
