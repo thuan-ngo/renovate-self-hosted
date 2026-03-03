@@ -26,6 +26,15 @@
       GitHub Actions
     ------------------------------------------  */
 
+    // Test rule: branchSuffix for actions/checkout
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchPackageNames: ["actions/checkout"],
+      branchSuffix: "-with-e2e",
+      automerge: false,
+    },
+
     // Auto-merge minor/patch updates for trusted actions
     {
       matchManagers: ["github-actions"],
@@ -33,6 +42,7 @@
       matchUpdateTypes: ["minor", "patch"],
       branchPrefix: "Garoon-renovate-automerge/",
       automerge: true,
+      labels: ["automerge"],
       matchPackageNames: [
         "actions/**",
         "cybozu**",
@@ -95,15 +105,6 @@
         "/container-registry\\.oracle\\.com/",
       ],
       enabled: false,
-    },
-
-    // Test rule: branchSuffix for actions/checkout
-    {
-      matchManagers: ["github-actions"],
-      matchDepTypes: ["action"],
-      matchPackageNames: ["actions/checkout"],
-      branchSuffix: "-with-e2e",
-      automerge: false,
     }
   ],
   customManagers: [],
