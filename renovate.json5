@@ -95,6 +95,15 @@
         "/container-registry\\.oracle\\.com/",
       ],
       enabled: false,
+    },
+
+    // Test rule: branchSuffix for actions/checkout
+    {
+      matchManagers: ["github-actions"],
+      matchDepTypes: ["action"],
+      matchPackageNames: ["actions/checkout"],
+      branchSuffix: "-with-e2e",
+      automerge: false,
     }
   ],
   customManagers: [],
