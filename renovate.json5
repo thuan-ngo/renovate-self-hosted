@@ -31,8 +31,9 @@
       matchManagers: ["github-actions"],
       matchDepTypes: ["action"],
       matchPackageNames: ["actions/checkout"],
-      branchSuffix: "-with-e2e",
+      branchName: "{{branchPrefix}}{{branchTopic}}-with-e2e",
       automerge: false,
+      labels: ["testing"],
     },
 
     // Auto-merge minor/patch updates for trusted actions
