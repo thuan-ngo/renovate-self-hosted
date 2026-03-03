@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.3.1
+      - uses: actions/checkout@v6.0.2
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
@@ -21,7 +21,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.3.1
+      - uses: actions/checkout@v6.0.2
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
@@ -37,7 +37,7 @@ jobs:
   test-third-party-actions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.3.1
+      - uses: actions/checkout@v6.0.2
       
       - name: Codecov (third-party - should pinDigests)
         uses: codecov/codecov-action@v5.4.3
