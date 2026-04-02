@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4.3.1
       
       - name: Codecov (third-party - should pinDigests)
-        uses: codecov/codecov-action@v5.4.3
+        uses: codecov/codecov-action@75cd11691c0faa626561e295848008c8a7dddffe # v5.5.4
         continue-on-error: true
         with:
           fail_ci_if_error: false
