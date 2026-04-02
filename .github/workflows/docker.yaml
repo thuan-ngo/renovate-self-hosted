@@ -34,7 +34,7 @@ jobs:
         uses: docker/setup-qemu-action@v3.6.0
       
       - name: Docker Metadata
-        uses: docker/metadata-action@v5.9.0
+        uses: docker/metadata-action@v6.0.0
         with:
           images: test/image
       
