@@ -36,29 +36,14 @@
       labels: ["testing"],
     },
 
-    // Auto-merge minor/patch updates for trusted actions
+    // [temporary stop] Auto-merge major/minor/patch updates for trusted actions
     {
       matchManagers: ["github-actions"],
       matchDepTypes: ["action"],
-      matchUpdateTypes: ["minor", "patch"],
-      branchPrefix: "Garoon-renovate-automerge/",
-      automerge: true,
-      labels: ["automerge"],
-      matchPackageNames: [
-        "actions/**",
-        "cybozu**",
-        "aws-actions/**",
-        "docker/**",
-        "ruby/**"
-      ],
-    },
-
-    // Major updates: always separate, no automerge
-    {
-      matchManagers: ["github-actions"],
-      matchDepTypes: ["action"],
-      matchUpdateTypes: ["major"],
+      matchUpdateTypes: ["major", "minor", "patch"],
       automerge: false,
+      pinDigests: true,
+      labels: ["renovate"],
       matchPackageNames: [
         "actions/**",
         "cybozu**",
