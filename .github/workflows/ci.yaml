@@ -62,7 +62,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       
       - name: GitHub Release (third-party - should pinDigests)
-        uses: softprops/action-gh-release@cd28b0f5ee8571b76cfdaa62a30d51d752317477 # v2.0.8
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         continue-on-error: true
         with:
           draft: true
