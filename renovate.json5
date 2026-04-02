@@ -40,10 +40,8 @@
     {
       matchManagers: ["github-actions"],
       matchDepTypes: ["action"],
-      matchUpdateTypes: ["major", "minor", "patch"],
       automerge: false,
       pinDigests: true,
-      labels: ["renovate"],
       matchPackageNames: [
         "actions/**",
         "cybozu**",
