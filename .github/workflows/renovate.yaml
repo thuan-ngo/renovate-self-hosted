@@ -32,6 +32,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
+      - name: Login to GitHub Container Registry
+        run: echo "${{ steps.generate-github-app-token.outputs.token }}" | docker login ghcr.io -u x-access-token --password-stdin
+
       - name: Run self-hosted Renovate
         uses: renovatebot/github-action@8b7941943a108b2cc2150730963164aa8baeab8c # v44.2.2
         with:
