@@ -12,10 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
 
-      # Expect: Renovate updates ruby/setup-ruby action (depType: action)
+      # Expect: Renovate updates ruby/setup-ruby action version + pin digest (depType: action)
       # Expect: Renovate does NOT update ruby-version (depType: uses-with, disabled)
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v1.200.0
         with:
           ruby-version: "3.1"
           bundler-cache: true
@@ -32,7 +32,7 @@ jobs:
           echo "✅ uses-with dep type test"
           echo "================================================"
           echo "Expected behavior:"
-          echo "  • ruby/setup-ruby@v1 → Renovate pins to specific version + digest (e.g. @<sha> # v1.221.0)"
+          echo "  • ruby/setup-ruby@v1.200.0 → Renovate updates version + pin digest (e.g. @<sha> # v1.221.0)"
           echo "  • ruby-version: 3.1  → Renovate does NOT update (uses-with disabled)"
           echo "  • node-version: 18   → Renovate does NOT update (uses-with disabled)"
           echo "================================================"
