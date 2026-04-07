@@ -32,7 +32,7 @@ jobs:
           echo "✅ uses-with dep type test"
           echo "================================================"
           echo "Expected behavior:"
-          echo "  • ruby/setup-ruby@v1 → Renovate creates PR to update action"
+          echo "  • ruby/setup-ruby@v1 → Renovate pins to specific version + digest (e.g. @<sha> # v1.221.0)"
           echo "  • ruby-version: 3.1  → Renovate does NOT update (uses-with disabled)"
           echo "  • node-version: 18   → Renovate does NOT update (uses-with disabled)"
           echo "================================================"
