@@ -1,0 +1,38 @@
+name: Test uses-with dep type
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-uses-with:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.2
+
+      # Expect: Renovate updates ruby/setup-ruby action (depType: action)
+      # Expect: Renovate does NOT update ruby-version (depType: uses-with, disabled)
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.1"
+          bundler-cache: true
+
+      # Expect: Renovate does NOT update node-version (depType: uses-with, disabled)
+      - name: Setup Node
+        uses: actions/setup-node@v6.3.0
+        with:
+          node-version: "18"
+
+      - name: Test result
+        run: |
+          echo "================================================"
+          echo "✅ uses-with dep type test"
+          echo "================================================"
+          echo "Expected behavior:"
+          echo "  • ruby/setup-ruby@v1 → Renovate creates PR to update action"
+          echo "  • ruby-version: 3.1  → Renovate does NOT update (uses-with disabled)"
+          echo "  • node-version: 18   → Renovate does NOT update (uses-with disabled)"
+          echo "================================================"

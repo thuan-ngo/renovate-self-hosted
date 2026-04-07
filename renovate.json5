@@ -69,6 +69,7 @@
     // Disable runtime version updates
     {
       matchManagers: ["github-actions"],
+      matchDepTypes: ["uses-with"],
       matchDepNames: [
         "node",
         "python",
