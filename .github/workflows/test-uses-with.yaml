@@ -15,14 +15,14 @@ jobs:
       # Expect: Renovate updates ruby/setup-ruby action version + pin digest (depType: action)
       # Expect: Renovate does NOT update ruby-version (depType: uses-with, disabled)
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1.200.0
+        uses: ruby/setup-ruby@217c988b8c2bf2bacb2d5c78a7e7b18f8c34daed # v1.200.0
         with:
           ruby-version: "3.1"
           bundler-cache: true
 
       # Expect: Renovate does NOT update node-version (depType: uses-with, disabled)
       - name: Setup Node
-        uses: actions/setup-node@v6.3.0
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: "18"
 

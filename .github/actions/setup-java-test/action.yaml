@@ -4,7 +4,7 @@ description: Test composite action for Java version updates
 runs:
   using: composite
   steps:
-    - uses: actions/setup-java@v4
+    - uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
       with:
         distribution: temurin
         java-version: 8
