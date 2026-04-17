@@ -27,6 +27,12 @@
       GitHub Actions
     ------------------------------------------  */
 
+    // [temporary suspend] Disable all GitHub Actions updates
+    {
+      matchManagers: ["github-actions"],
+      enabled: false,
+    },
+
     // Test rule: branchSuffix for actions/checkout
     {
       matchManagers: ["github-actions"],
